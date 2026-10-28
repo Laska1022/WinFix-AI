@@ -7,6 +7,7 @@ installer and English/Russian console launch flow without changing diagnostic
 permissions or claiming Phase 0 remote acceptance.
 
 - Release build passed with 0 warnings/errors; **29 tests passed, 0 failed/skipped**.
+  Final run took 21.423 seconds. Verified source: 4d3ec365a39724276b479521c8e7d3f3a0173dc4.
   New tests exercise both languages, private local report storage, decline/EOF
   behavior, non-Windows guard, explicit consent, a live mock HTTPS request, Enter
   stop, disconnected endpoint and absence of token disclosure.

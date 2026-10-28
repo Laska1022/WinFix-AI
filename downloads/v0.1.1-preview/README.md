@@ -15,7 +15,7 @@ been tested on Windows. Linux tests cover the protocol and console flow with moc
 diagnostics. No service, automatic startup, repair or GUI control is included.
 
 SHA256SUMS.txt verifies the installer. build-manifest.json records the source commit
-and hashes of both installer and bundled app. WindowsExecutionTested remains false.
+and hashes of both installer and bundled app. windowsExecutionTested remains false.
 This directory is distributed through Git because the current environment's GitHub
 Release API is blocked. It is not a GitHub Release. Future builds should use Release
 assets when that supported access is available, avoiding repeated binaries in Git.

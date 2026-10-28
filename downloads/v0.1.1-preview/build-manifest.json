@@ -1,0 +1,16 @@
+{
+  "version": "0.1.1-preview",
+  "sourceCommit": "4d3ec365a39724276b479521c8e7d3f3a0173dc4",
+  "sourceDirty": false,
+  "windowsExecutionTested": false,
+  "files": {
+    "WinFix.Agent.exe": {
+      "size": 50352362,
+      "sha256": "e36fe9ed8cc2aa99619c82eb253704874db713421f9f31356a6bbf01e99dd3b6"
+    },
+    "WinFixAI-Setup-0.1.1-preview.exe": {
+      "size": 43959885,
+      "sha256": "dda4160381a6bc7778715e2c970063ce424b0c8003678be104268d4f4ecc19d7"
+    }
+  }
+}

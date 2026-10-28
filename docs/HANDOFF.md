@@ -6,16 +6,18 @@
 - Current milestone: user requested easy EXE installation/use and GitHub upload.
   NSIS per-user installer, self-contained Windows app, English/Russian console menu,
   private local reports, consent and stop controls are implemented. 29 tests pass.
-  Windows execution and installation remain unverified. Current source/binary commit
-  provenance will be recorded in the download manifest and final handoff update.
-- Latest verified code commit: `e8cff88be1abf2e690053516abed316483803438`
-  (`Implement Phase 0 read-only HTTPS diagnostics prototype`). A later documentation-only
-  commit records this hash; use `git log -1` for the branch's documentation tip.
-- GitHub continuity: the feature branch was pushed successfully and its remote SHA
-  matched that code commit. Do not assume a main branch exists in this initially
-  empty repository; explicitly select feat/phase0-secure-diagnostics when cloning.
-- Verified results: 24 tests passed, 0 failed/skipped; Release build 0 warnings/errors;
-  self-contained Windows x64 publish passed (Windows execution remains untested).
+  Windows execution and installation remain unverified.
+- Latest verified source commit: `4d3ec365a39724276b479521c8e7d3f3a0173dc4`
+  (`Add per-user Windows installer and bilingual launch menu`). The installer was
+  built from that clean commit; download build-manifest.json records provenance.
+  A subsequent artifact/documentation commit contains the EXE and this handoff.
+- Distribution tag: v0.1.1-preview on feat/windows-easy-install. Clone/fetch this
+  branch/tag explicitly; the old Phase 0 branch remains unchanged. Do not assume
+  a main branch exists in this initially empty repository.
+- Verified results: 29 tests passed, 0 failed/skipped (21.423 seconds); Release build
+  0 warnings/errors; Windows single-file publish and NSIS installer compilation
+  passed. Installer payload hash matches the app. Windows execution remains untested.
+- Earlier Phase 0 source: `e8cff88be1abf2e690053516abed316483803438` (24 tests then).
 - Repository at start: empty local and remote refs. No earlier completed features
   were available. The user supplied the specification now saved as SPECIFICATION.md.
 
