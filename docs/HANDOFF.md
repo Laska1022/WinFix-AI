@@ -3,7 +3,14 @@
 - Project: WinFix AI, authorized Windows diagnostics and future assisted repair.
 - Phase: Phase 0 locally tested prototype; real Windows/private-network gate pending.
 - Active branch: feat/phase0-secure-diagnostics.
-- Latest verified code commit: recorded in the final handoff update after commit.
+- Latest verified code commit: `e8cff88be1abf2e690053516abed316483803438`
+  (`Implement Phase 0 read-only HTTPS diagnostics prototype`). A later documentation-only
+  commit records this hash; use `git log -1` for the branch's documentation tip.
+- GitHub continuity: the feature branch was pushed successfully and its remote SHA
+  matched that code commit. Do not assume a main branch exists in this initially
+  empty repository; explicitly select feat/phase0-secure-diagnostics when cloning.
+- Verified results: 24 tests passed, 0 failed/skipped; Release build 0 warnings/errors;
+  self-contained Windows x64 publish passed (Windows execution remains untested).
 - Repository at start: empty local and remote refs. No earlier completed features
   were available. The user supplied the specification now saved as SPECIFICATION.md.
 
@@ -32,6 +39,10 @@ This cloud checkout uses .NET under /workspace/.dotnet and Python 3.12.14. Run
 `bash scripts/cloud_setup.sh` from /workspace/WinFix-AI. Tests create and stop temporary
 HTTPS hosts. No persistent service, test credential, or connection should survive.
 See SETUP.md for first-use directory permissions, portable launch and private routing.
+The reusable environment configuration is to retain this checkout and SDK, run
+scripts/cloud_setup.sh for installation/refresh, and read this handoff on startup.
+Review/save and publication are separate from current-instance validation; a new
+task's filesystem restoration and networking have not yet been tested.
 
 ## Exact continuation
 
