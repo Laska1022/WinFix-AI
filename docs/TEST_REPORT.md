@@ -10,7 +10,10 @@ unfinished reservations, malformed HTTP/deep JSON, safe CLI error details and oc
 readiness. The Linux-only moved-directory case is explicitly skipped on Windows.
 Windows execution, installation, uninstallation and private-network integration remain
 unrun. Versioned installer hashes and clean source provenance are recorded in
-downloads/v0.1.2-preview/build-manifest.json after packaging.
+downloads/v0.1.2-preview/build-manifest.json. Windows single-file publish and NSIS
+compilation passed; 7-Zip extraction confirmed the bundled app exactly matches the
+published app SHA-256. Built from clean source commit
+`9ae780082864ac37b754f8019ad675bc0d50ef13`.
 
 ## 0.1.1 preview installer milestone — 2026-10-28
 

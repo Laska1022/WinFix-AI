@@ -6,12 +6,16 @@
 - Current milestone: review and fixes requested by the user. Four reproduced defects
   fixed: shutdown tied to storage, invalid audit recovery, HTTP client crashes, and
   readiness reported before successful startup. See REVIEW.md for evidence.
-- Latest verified source commit: recorded after the review source commit, along with
-  the clean build provenance in downloads/v0.1.2-preview/build-manifest.json.
+- Latest verified source commit: `9ae780082864ac37b754f8019ad675bc0d50ef13`
+  (`Fix session shutdown, audit recovery and client failure handling`). The installer
+  was built from this clean commit; build-manifest.json records provenance. A later
+  binary/documentation commit holds the artifact and this handoff.
 - Distribution tag: v0.1.2-preview; preserve the previous 0.1.1 tag and binary.
   Clone/fetch this branch/tag explicitly; do not assume a main branch exists.
 - Verified results: 37 tests passed, 0 failed/skipped (32.888 seconds); Release build
-  0 warnings/errors. Windows installation/runtime/private routing remain untested.
+  0 warnings/errors. Windows single-file publish and NSIS compilation passed;
+  extracted installer payload matches the published app hash. Windows installation,
+  runtime and private routing remain untested.
 - Previous installer source: 4d3ec365a39724276b479521c8e7d3f3a0173dc4 (0.1.1).
 - Earlier Phase 0 source: `e8cff88be1abf2e690053516abed316483803438` (24 tests then).
 - Repository at start: empty local and remote refs. No earlier completed features
