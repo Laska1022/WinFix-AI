@@ -1,5 +1,17 @@
 # Test report
 
+## 0.1.2 preview reliability fixes — 2026-10-28
+
+See REVIEW.md for reproduced failures and their fixes. Baseline 0.1.1: 29 tests passed.
+Final source validation: **37 tests passed, 0 failed/skipped**, 32.888 seconds;
+Release build **0 warnings/errors**, 6.39 seconds. Regression coverage adds shutdown
+with unwritable/missing state paths, audit schema/encoding/framing/sequence corruption,
+unfinished reservations, malformed HTTP/deep JSON, safe CLI error details and occupied-port
+readiness. The Linux-only moved-directory case is explicitly skipped on Windows.
+Windows execution, installation, uninstallation and private-network integration remain
+unrun. Versioned installer hashes and clean source provenance are recorded in
+downloads/v0.1.2-preview/build-manifest.json after packaging.
+
 ## 0.1.1 preview installer milestone — 2026-10-28
 
 User requested an easy-to-install EXE and GitHub upload. Added a per-user NSIS

@@ -1,5 +1,9 @@
 # Task queue
 
+Completed review milestone: four reproduced reliability bugs fixed and regression
+tests added (37 passing on Linux). Validate the 0.1.2 installer on Windows next;
+see REVIEW.md and TEST_REPORT.md. No Phase 0 remote acceptance claim is made.
+
 User-requested packaging step implemented ahead of the Windows acceptance gate:
 per-user EXE installer, self-contained app, English/Russian console menu, local
 diagnostic reports and consent/stop flow. This does not close the Phase 0 gate.

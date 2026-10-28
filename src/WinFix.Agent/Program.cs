@@ -109,21 +109,39 @@ if (interactive)
             "ЛОКАЛЬНЫЙ СЕАНС АКТИВЕН. Нажмите Enter для ОСТАНОВКИ и отключения."));
         Console.WriteLine($"https://127.0.0.1:{config.Port} | Device: {config.DeviceId} | Expires: {config.ExpiresAt:O}");
         await Task.WhenAny(app.WaitForShutdownAsync(), Task.Run(() => Console.ReadLine()));
-        File.WriteAllText(config.StopFile, "Stopped by owner");
+        // Disconnect first: a marker write failure must never leave the listener active.
         await app.StopAsync();
+        try
+        {
+            File.WriteAllText(config.StopFile, "Stopped by owner");
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        {
+            Console.WriteLine(InteractiveConsole.Text(
+                "Disconnected, but the stop marker could not be saved. Retire this session; do not restart its configuration.",
+                "Соединение закрыто, но отметку остановки сохранить не удалось. Не запускайте этот сеанс повторно."));
+            Environment.ExitCode = 1;
+        }
     }
-    catch (IOException)
+    catch (Exception error) when (error is IOException or UnauthorizedAccessException)
     {
+        await app.StopAsync();
         Console.WriteLine(InteractiveConsole.Text("Could not start or finish the session. Close any other WinFix session and check disk access. Press Enter to exit.",
             "Не удалось запустить или завершить сеанс. Закройте другой сеанс WinFix и проверьте доступ к диску. Нажмите Enter для выхода."));
         Console.ReadLine();
         Environment.ExitCode = 1;
     }
+    finally
+    {
+        // Also covers cancellation or unexpected failures; no input prompt can keep it running.
+        await app.StopAsync();
+    }
 }
 else
 {
+    await app.StartAsync();
     Console.WriteLine($"WinFix READ ONLY active; device={config.DeviceId}; mock={config.Mock}. Create the configured stop file or press Ctrl+C to disconnect.");
-    await app.RunAsync();
+    await app.WaitForShutdownAsync();
 }
 
 namespace WinFix.Agent

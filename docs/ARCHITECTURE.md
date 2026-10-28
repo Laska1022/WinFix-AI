@@ -19,7 +19,9 @@ SHA-256, not the token. Credentials expire within one hour of initialization.
 Audit reservations are flushed to disk before collection. A persistent request-ID
 set prevents replay after restart; repeated concurrent requests have one winner.
 Completed records precede responses. The maximum journal is 10 MiB: full or corrupt
-journals fail closed. The owner must archive and rotate credentials before resetting
+journals fail closed. Recovery validates required fields, strict UTF-8, trailing
+record delimiters and accepted/completed ordering; incomplete reservations remain
+reserved after restart. The owner must archive and rotate credentials before resetting
 a journal. This is a prototype single-technician, single-device session, not a
 multi-tenant authorization service.
 
@@ -47,7 +49,8 @@ See FEASIBILITY.md for observations, sources, and the comparison with a VPS rela
 Launching without arguments opens an English/Russian console menu. Basic local
 reports reuse the API's read-only collector and are saved in a private directory.
 The local session option creates fresh credentials only after consent, binds
-loopback, and stops on Enter. Developer --demo-menu labels synthetic evidence.
+loopback, and stops on Enter. Listener shutdown precedes stop-marker persistence,
+so a storage failure cannot keep a session serving while waiting for more input. Developer --demo-menu labels synthetic evidence.
 The NSIS installer installs a self-contained single-file app per user, shortcuts
 and an uninstaller. It does not register a service, open firewall ports, change
 root trust, or add auto-start entries. Windows execution remains unverified.

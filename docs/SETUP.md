@@ -1,9 +1,9 @@
 # Build, run, and accept the prototype
 
-## Easy Windows installation (0.1.1 preview)
+## Easy Windows installation (0.1.2 preview)
 
-Download WinFixAI-Setup-0.1.1-preview.exe from the downloads/v0.1.1-preview directory
-on the feat/windows-easy-install GitHub branch. The repository README has a direct
+Download WinFixAI-Setup-0.1.2-preview.exe from the downloads/v0.1.2-preview directory
+on the fix/review-reliability GitHub branch. The repository README has a direct
 download link and the directory has checksums/build provenance. GitHub release API
 access was blocked, so this is a repository download, not a published Release asset.
 
@@ -22,7 +22,7 @@ do not bypass SmartScreen or organization policy. Read packaging/QUICK-START.txt
 
 To reproduce the installer, install NSIS 3.11 (Windows or Linux) and the SDK below,
 then run `python scripts/package_windows.py`. DOTNET and MAKENSIS optionally select
-the executables. Output is artifacts/0.1.1-preview. The build includes a source
+the executables. Output is artifacts/0.1.2-preview. The build includes a source
 commit/dirty-state manifest and SHA-256 hashes. The installer bundles a compressed
 self-contained single-file app; .NET extracts its native runtime cache on first run.
 

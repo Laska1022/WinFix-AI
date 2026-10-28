@@ -2,6 +2,7 @@
 """Read-only HTTPS client. Uses configured HTTP(S) proxies and verified TLS."""
 import argparse
 import datetime as dt
+import http.client
 import json
 import os
 import ssl
@@ -56,14 +57,15 @@ class HttpsTransport:
                     raise WinFixError("Agent returned a non-JSON response")
                 raw = response.read(MAX_RESPONSE + 1)
         except urllib.error.HTTPError as exc:
+            exc.close()
             raise WinFixError(f"Agent rejected the request (HTTP {exc.code})") from None
-        except (urllib.error.URLError, TimeoutError, OSError):
+        except (urllib.error.URLError, TimeoutError, OSError, http.client.HTTPException):
             raise WinFixError("Connection failed; check TLS trust, proxy routing, hostname, and agent availability") from None
         if len(raw) > MAX_RESPONSE:
             raise WinFixError("Agent response exceeded the size limit")
         try:
             data = json.loads(raw)
-        except (ValueError, UnicodeError):
+        except (ValueError, UnicodeError, RecursionError):
             raise WinFixError("Agent returned invalid JSON") from None
         if not isinstance(data, dict):
             raise WinFixError("Agent returned an invalid response object")
@@ -110,7 +112,11 @@ def main():
         transport = HttpsTransport(args.endpoint, os.environ.get("WINFIX_TOKEN", ""), args.ca_file)
         result = get_system_information(transport, args.device_id, allow_mock=args.allow_mock)
         print(json.dumps(result, indent=2))
-    except (WinFixError, OSError, ValueError):
+    except WinFixError as error:
+        # WinFixError messages are deliberately independent of server bodies/secrets.
+        print(f"WinFix request failed: {error}", file=sys.stderr)
+        return 1
+    except (OSError, ValueError):
         # Details from arbitrary exceptions may contain server-controlled data or credentials.
         print("WinFix request failed. Check credentials, identity, TLS, routing, response schema, and mock mode.", file=sys.stderr)
         return 1

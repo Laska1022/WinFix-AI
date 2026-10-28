@@ -58,3 +58,9 @@ before uninstalling. The console menu requires consent before opening a local te
 listener. Local reports also use protected directories. Its explicit --demo-menu
 mode cannot supply genuine Windows acceptance evidence. Self-contained .NET bundles
 may extract native runtime files into the user's .NET temporary cache on first run.
+
+0.1.2 review hardening: validate audit schema/UTF-8/framing/record sequences before
+starting, shut down HTTPS before persisting a stop marker, sanitize malformed HTTP
+and JSON errors, and invoke icacls.exe by its Windows system-directory path. A failed
+marker write returns a disconnected warning; retire that configuration. These
+controls do not make the local audit journal tamper-proof. See REVIEW.md.

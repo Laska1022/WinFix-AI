@@ -1,6 +1,6 @@
-WinFix AI 0.1.1 Preview - Windows x64
+WinFix AI 0.1.2 Preview - Windows x64
 
-1. Run WinFixAI-Setup-0.1.1-preview.exe using your normal Windows account.
+1. Run WinFixAI-Setup-0.1.2-preview.exe using your normal Windows account.
 2. Open WinFix AI from the Start menu or desktop shortcut.
 3. Choose English or Russian.
 4. Choose 1 to collect basic diagnostics. The private report location is displayed.

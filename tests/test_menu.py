@@ -57,6 +57,16 @@ class MenuTests(unittest.TestCase):
         self.assertFalse(self.root.exists())
 
     def test_explicit_session_consent_request_and_stop(self):
+        self.exercise_session_stop(break_stop_marker=False)
+
+    def test_stop_disconnects_even_when_marker_cannot_be_written(self):
+        self.exercise_session_stop(break_stop_marker=True)
+
+    @unittest.skipIf(os.name == "nt", "Windows can lock a directory containing an open audit file")
+    def test_stop_disconnects_after_session_directory_moves(self):
+        self.exercise_session_stop(break_stop_marker=True, move_directory=True)
+
+    def exercise_session_stop(self, *, break_stop_marker, move_directory=False):
         process = subprocess.Popen([DOTNET, str(DLL), "--demo-menu"], env=self.environment,
                                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                    text=True, encoding="utf-8")
@@ -89,14 +99,21 @@ class MenuTests(unittest.TestCase):
                                                         urllib.request.HTTPSHandler(context=context))
             result = get_system_information(client, config["DeviceId"], allow_mock=True)
             self.assertTrue(result["mock"])
+            if move_directory:
+                paths[0].parent.rename(paths[0].parent.with_name("moved-session"))
+            elif break_stop_marker:
+                # A directory at STOP cannot be overwritten as a file, on either OS.
+                Path(config["StopFile"]).mkdir()
             process.stdin.write("\n")
             process.stdin.flush()
-            self.assertEqual(process.wait(timeout=10), 0)
-            self.assertTrue(Path(config["StopFile"]).is_file())
+            self.assertEqual(process.wait(timeout=10), 1 if break_stop_marker else 0)
+            if not break_stop_marker:
+                self.assertTrue(Path(config["StopFile"]).is_file())
             with self.assertRaises(WinFixError):
                 get_system_information(client, config["DeviceId"], allow_mock=True)
             reader.join(timeout=5)
             self.assertNotIn(token, "".join(output))
+            self.assertNotIn("Unhandled exception", "".join(output))
         finally:
             if process.poll() is None:
                 process.kill()

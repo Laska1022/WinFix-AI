@@ -3,8 +3,8 @@
 An open-source, subscription-independent Windows diagnostics prototype for use
 from Codex Cloud or a terminal. No LLM API or AI service is called by this code.
 
-**[Download the Windows setup EXE](https://github.com/Laska1022/WinFix-AI/raw/refs/heads/feat/windows-easy-install/downloads/v0.1.1-preview/WinFixAI-Setup-0.1.1-preview.exe)**
-— unsigned preview, Windows x64. [Checksums and build details](downloads/v0.1.1-preview/README.md).
+**[Download the Windows setup EXE](https://github.com/Laska1022/WinFix-AI/raw/refs/tags/v0.1.2-preview/downloads/v0.1.2-preview/WinFixAI-Setup-0.1.2-preview.exe)**
+— unsigned preview, Windows x64. [Checksums and build details](downloads/v0.1.2-preview/README.md).
 
 Run the installer using your normal account, then open **WinFix AI** from the
 desktop or Start menu. Choose English or Russian, then **1** for basic local

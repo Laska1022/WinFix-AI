@@ -16,10 +16,10 @@ InstallDir "$LOCALAPPDATA\Programs\WinFixAI"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
 SetCompressorDictSize 32
-VIProductVersion "0.1.1.0"
+VIProductVersion "0.1.2.0"
 VIAddVersionKey /LANG=1033 "ProductName" "WinFix AI Preview"
 VIAddVersionKey /LANG=1033 "FileDescription" "WinFix AI per-user installer"
-VIAddVersionKey /LANG=1033 "FileVersion" "0.1.1-preview"
+VIAddVersionKey /LANG=1033 "FileVersion" "0.1.2-preview"
 VIAddVersionKey /LANG=1033 "LegalCopyright" "WinFix AI contributors"
 
 !define MUI_ABORTWARNING
@@ -71,7 +71,7 @@ Section "WinFix AI" SEC_APP
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\WinFixAI" "DisplayName" "WinFix AI (Preview)"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\WinFixAI" "UninstallString" '$\"$INSTDIR\Uninstall.exe$\"'
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\WinFixAI" "DisplayIcon" "$INSTDIR\WinFixAI.exe"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\WinFixAI" "DisplayVersion" "0.1.1-preview"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\WinFixAI" "DisplayVersion" "0.1.2-preview"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\WinFixAI" "Publisher" "WinFix AI contributors"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\WinFixAI" "InstallLocation" "$INSTDIR"
   WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\WinFixAI" "NoModify" 1

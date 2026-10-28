@@ -26,3 +26,9 @@
   GitHub REST release operations are blocked; upload the ~44 MB setup binary to a
   versioned downloads directory through working Git authentication, with checksums
   and source provenance. Release assets can replace this distribution path later.
+
+- **D008 — Failure paths are part of the stop and recovery contracts.** Session
+  shutdown must not depend on filesystem writes. Audit recovery rejects incomplete
+  or invalid records rather than guessing missing replay history. Expected client
+  errors expose safe diagnostic details, never remote bodies or credentials. Keep
+  previous preview binaries immutable and distribute fixes as 0.1.2.

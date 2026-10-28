@@ -46,7 +46,8 @@ public static class PrivateDirectory
         if (OperatingSystem.IsWindows())
         {
             var sid = WindowsIdentity.GetCurrent().User?.Value ?? throw new InvalidOperationException("No Windows identity");
-            var start = new ProcessStartInfo("icacls.exe") { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true };
+            var start = new ProcessStartInfo(Path.Combine(Environment.SystemDirectory, "icacls.exe"))
+                { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true };
             foreach (var arg in new[] { path, "/inheritance:r", "/grant:r", $"*{sid}:(OI)(CI)F", "*S-1-5-18:(OI)(CI)F" }) start.ArgumentList.Add(arg);
             using var process = Process.Start(start) ?? throw new IOException("Cannot secure credential directory");
             process.WaitForExit();

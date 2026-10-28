@@ -1,10 +1,11 @@
 import datetime as dt
 from email.message import Message
 import io
+import http.client
 import unittest
 import uuid
-from unittest.mock import Mock
-from tools.winfix_client import HttpsTransport, MAX_RESPONSE, NoRedirect, WinFixError, get_system_information
+from unittest.mock import Mock, patch
+from tools.winfix_client import HttpsTransport, MAX_RESPONSE, NoRedirect, WinFixError, get_system_information, main
 
 
 class FakeTransport:
@@ -65,6 +66,34 @@ class ClientTests(unittest.TestCase):
         with self.assertRaises(WinFixError) as raised:
             client.post({})
         self.assertNotIn("secret", str(raised.exception))
+
+    def test_http_protocol_errors_are_safe_errors(self):
+        for error in (http.client.BadStatusLine("sensitive response"),
+                      http.client.IncompleteRead(b"sensitive response", 100)):
+            client = HttpsTransport("https://localhost", "test")
+            client.opener = Mock()
+            client.opener.open.side_effect = error
+            with self.subTest(error=type(error).__name__), self.assertRaises(WinFixError):
+                client.post({})
+
+    def test_deep_json_is_rejected_without_crashing(self):
+        client = HttpsTransport("https://localhost", "test")
+        response = io.BytesIO(b"[" * 32000 + b"]" * 32000)
+        response.headers = Message()
+        response.headers["Content-Type"] = "application/json"
+        client.opener = Mock()
+        client.opener.open.return_value = response
+        with self.assertRaises(WinFixError):
+            client.post({})
+
+    def test_cli_reports_safe_authentication_error(self):
+        arguments = ["winfix_client.py", "get-system-information", "--endpoint", "https://localhost",
+                     "--device-id", str(uuid.uuid4())]
+        error = WinFixError("Agent rejected the request (HTTP 401)")
+        with patch("sys.argv", arguments), patch("tools.winfix_client.HttpsTransport", side_effect=error), \
+                patch("sys.stderr", new_callable=io.StringIO) as output:
+            self.assertEqual(main(), 1)
+            self.assertIn("HTTP 401", output.getvalue())
 
 
 if __name__ == "__main__":

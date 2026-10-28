@@ -161,7 +161,7 @@ class AgentIntegration(unittest.TestCase):
         self.stop()
         # Valid journal just below its bound; next acceptance must fail, on Windows too.
         entry = json.dumps({"At": dt.datetime.now(dt.timezone.utc).isoformat(),
-                            "RequestId": None, "TechnicianId": None, "Outcome": "test"})
+                            "RequestId": None, "TechnicianId": None, "Outcome": "unauthorized"})
         padding = " " * (10 * 1024 * 1024 - len(entry) - 10)
         Path(self.config["AuditPath"]).write_text(entry + padding + "\n")
         self.start()
@@ -172,6 +172,52 @@ class AgentIntegration(unittest.TestCase):
         Path(self.config["AuditPath"]).write_text("{interrupted write")
         result = subprocess.run([DOTNET, str(DLL), "serve", str(self.path)], capture_output=True, timeout=10)
         self.assertNotEqual(result.returncode, 0)
+
+    def test_structurally_invalid_audit_refuses_startup(self):
+        self.stop()
+        entry = {"At": dt.datetime.now(dt.timezone.utc).isoformat(), "RequestId": str(uuid.uuid4()),
+                 "TechnicianId": self.config["TechnicianId"], "Outcome": "accepted"}
+        valid = json.dumps(entry).encode()
+        cases = [b"{}\n", json.dumps({**entry, "TechnicianId": None}).encode() + b"\n",
+                 json.dumps({**entry, "Outcome": "completed"}).encode() + b"\n",
+                 json.dumps({**entry, "Outcome": "unknown"}).encode() + b"\n",
+                 valid, valid + b"\n" + valid + b"\n",
+                 valid[:-1] + b', "Outcome": "unauthorized"}\n',
+                 json.dumps({**entry, "RequestId": "not-a-uuid"}).encode() + b"\n",
+                 b'{"At":"2026-10-28T00:00:00Z","RequestId":null,"TechnicianId":null,"Outcome":"unauthori\xffzed"}\n']
+        for data in cases:
+            Path(self.config["AuditPath"]).write_bytes(data)
+            process = subprocess.Popen([DOTNET, str(DLL), "serve", str(self.path)],
+                                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            try:
+                try:
+                    code = process.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    self.fail("Agent started with a structurally corrupt journal")
+                self.assertNotEqual(code, 0)
+            finally:
+                if process.poll() is None:
+                    process.kill(); process.wait(timeout=5)
+
+    def test_unfinished_audit_reservation_blocks_replay(self):
+        self.stop()
+        payload = self.payload()
+        entry = {"At": dt.datetime.now(dt.timezone.utc).isoformat(), "RequestId": payload["requestId"],
+                 "TechnicianId": self.config["TechnicianId"], "Outcome": "accepted"}
+        Path(self.config["AuditPath"]).write_text(json.dumps(entry) + "\n")
+        self.start()
+        self.assertEqual(self.send(payload)[0], 409)
+
+    def test_occupied_port_does_not_report_active(self):
+        directory = Path(self.temp.name) / "second-session"
+        subprocess.run([DOTNET, str(DLL), "init", str(directory)], check=True, capture_output=True)
+        path = directory / "agent.json"
+        config = json.loads(path.read_text())
+        config.update(Port=self.config["Port"], Mock=self.config["Mock"])
+        path.write_text(json.dumps(config))
+        result = subprocess.run([DOTNET, str(DLL), "serve", str(path)], capture_output=True, text=True, timeout=10)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn("READ ONLY active", result.stdout)
 
     def test_real_mode_requires_windows(self):
         if os.name == "nt":

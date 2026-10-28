@@ -6,7 +6,7 @@ from pathlib import Path
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.1.1-preview"
+VERSION = "0.1.2-preview"
 output = ROOT / "artifacts" / VERSION
 publish = output / "publish"
 output.mkdir(parents=True, exist_ok=True)

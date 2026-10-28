@@ -1,5 +1,10 @@
 # Known issues and limitations
 
+The four reproduced defects from the 0.1.1 review are fixed in 0.1.2; see REVIEW.md.
+If saving a stop marker fails, the listener now disconnects and reports the error.
+Retire that session configuration rather than restarting it. Corrupt audit journals
+are refused; do not delete records to make startup pass.
+
 - No Windows test machine: Windows collection, ACLs, portable execution, and Windows
   10/11/Server support are not verified. Phase 0's remote acceptance is blocked.
 - Official Codex/Tailscale documentation requests were denied by the proxy. Domain

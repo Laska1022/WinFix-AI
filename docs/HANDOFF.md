@@ -2,21 +2,17 @@
 
 - Project: WinFix AI, authorized Windows diagnostics and future assisted repair.
 - Phase: Phase 0 locally tested prototype; real Windows/private-network gate pending.
-- Active branch: feat/windows-easy-install (created from the verified Phase 0 branch).
-- Current milestone: user requested easy EXE installation/use and GitHub upload.
-  NSIS per-user installer, self-contained Windows app, English/Russian console menu,
-  private local reports, consent and stop controls are implemented. 29 tests pass.
-  Windows execution and installation remain unverified.
-- Latest verified source commit: `4d3ec365a39724276b479521c8e7d3f3a0173dc4`
-  (`Add per-user Windows installer and bilingual launch menu`). The installer was
-  built from that clean commit; download build-manifest.json records provenance.
-  A subsequent artifact/documentation commit contains the EXE and this handoff.
-- Distribution tag: v0.1.1-preview on feat/windows-easy-install. Clone/fetch this
-  branch/tag explicitly; the old Phase 0 branch remains unchanged. Do not assume
-  a main branch exists in this initially empty repository.
-- Verified results: 29 tests passed, 0 failed/skipped (21.423 seconds); Release build
-  0 warnings/errors; Windows single-file publish and NSIS installer compilation
-  passed. Installer payload hash matches the app. Windows execution remains untested.
+- Active branch: fix/review-reliability, based on the published 0.1.1 preview.
+- Current milestone: review and fixes requested by the user. Four reproduced defects
+  fixed: shutdown tied to storage, invalid audit recovery, HTTP client crashes, and
+  readiness reported before successful startup. See REVIEW.md for evidence.
+- Latest verified source commit: recorded after the review source commit, along with
+  the clean build provenance in downloads/v0.1.2-preview/build-manifest.json.
+- Distribution tag: v0.1.2-preview; preserve the previous 0.1.1 tag and binary.
+  Clone/fetch this branch/tag explicitly; do not assume a main branch exists.
+- Verified results: 37 tests passed, 0 failed/skipped (32.888 seconds); Release build
+  0 warnings/errors. Windows installation/runtime/private routing remain untested.
+- Previous installer source: 4d3ec365a39724276b479521c8e7d3f3a0173dc4 (0.1.1).
 - Earlier Phase 0 source: `e8cff88be1abf2e690053516abed316483803438` (24 tests then).
 - Repository at start: empty local and remote refs. No earlier completed features
   were available. The user supplied the specification now saved as SPECIFICATION.md.
@@ -76,13 +72,13 @@ of claiming remote functionality or rebuilding the completed HTTPS prototype.
 
 ## Packaging continuation
 
-Read packaging/QUICK-START.txt and downloads/v0.1.1-preview/README.md. Rebuild with
+Read packaging/QUICK-START.txt and downloads/v0.1.2-preview/README.md. Rebuild with
 `python scripts/package_windows.py` using .NET SDK 10.0.403 and NSIS 3.11. In this
 cloud set DOTNET=/workspace/.dotnet/dotnet,
 DOTNET_CLI_HOME=/workspace/.dotnet-home, NUGET_PACKAGES=/workspace/.nuget/packages,
 MAKENSIS=/workspace/.build-tools/nsis/usr/bin/makensis and
 NSISDIR=/workspace/.build-tools/nsis/usr/share/nsis. Build output is ignored under
-artifacts/0.1.1-preview. The published preview installer belongs in the versioned
+artifacts/0.1.2-preview. The published preview installer belongs in the versioned
 downloads directory with provenance/checksums. Do not commit private session data.
 
 The GitHub REST API is blocked (Forbidden); Git pushes work. Do not ask for a token
@@ -91,3 +87,13 @@ This upload is a repository download, not a GitHub Release asset. Move future bi
 to releases when supported access is available. Do not force push or overwrite
 published versioned binaries. Next acceptance includes Windows install/start/menu/
 report/session-stop/uninstall/data-retention checks, then the existing private-route gate.
+
+## Review-specific continuation
+
+Do not reintroduce filesystem writes before listener shutdown. Keep corrupted audit
+recovery fail-closed; preserve pending reservations after restart. Client errors must
+be actionable but must not echo remote response bodies or credentials. The Linux
+moved-directory regression is intentionally skipped on Windows; the independent
+marker-write regression covers both platforms. Next required external step is a
+Windows install/session/uninstall test of 0.1.2, followed by real private HTTPS
+acceptance. No available automated check proves those Windows behaviors.

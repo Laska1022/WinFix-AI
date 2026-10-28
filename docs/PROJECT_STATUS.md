@@ -10,7 +10,7 @@ CI workflow; full architecture, setup, threat model and account-independent hand
 
 User-requested packaging milestone: self-contained Windows single-file app and NSIS
 per-user setup EXE with shortcuts/uninstaller; English/Russian console menu, private
-local reports and explicit local-session consent/stop. 29 Linux tests pass. The
+local reports and explicit local-session consent/stop. 37 Linux tests pass. The
 installer compiles; real Windows installation and uninstallation remain untested.
 
 Linux build and integration checks pass. No Windows host is available. Neither the
@@ -25,3 +25,7 @@ knowledge base, installer validation/signing and production hardening. No paid A
 Next: P0 acceptance in TASK_QUEUE.md. First unblock official documentation access
 and obtain an owner-authorized Windows test host/private HTTPS route. Default client
 refuses mock evidence, so it can serve as the real connection acceptance command.
+
+Reliability review: fixed stop-on-storage-failure behavior, strict audit recovery,
+HTTP client error handling and premature readiness messages; see REVIEW.md. Version
+0.1.2 includes these fixes. Windows acceptance remains pending.
