@@ -1,5 +1,36 @@
 # Build, run, and accept the prototype
 
+## Easy Windows installation (0.1.1 preview)
+
+Download WinFixAI-Setup-0.1.1-preview.exe from the downloads/v0.1.1-preview directory
+on the feat/windows-easy-install GitHub branch. The repository README has a direct
+download link and the directory has checksums/build provenance. GitHub release API
+access was blocked, so this is a repository download, not a published Release asset.
+
+Run the installer as your normal Windows user; it defaults to
+%LOCALAPPDATA%\Programs\WinFixAI, installs desktop/Start menu shortcuts and an
+uninstaller, and needs no separate Python or .NET installation. Open WinFix AI,
+choose English/Russian, and choose 1 for basic local diagnostics. Choose 2 and type
+START/СТАРТ for a LOCAL test session. Press Enter in the active session to stop.
+Sessions expire in one hour. Remote access still needs the private-network setup
+below; this installer does not automatically connect a computer to Codex.
+
+Private data lives under %LOCALAPPDATA%\WinFixAI\Data. Uninstall via Windows Apps
+or the Start menu entry after closing the app. Data remains for owner-controlled
+retention/deletion. The unsigned installer is cross-built, not Windows-validated;
+do not bypass SmartScreen or organization policy. Read packaging/QUICK-START.txt.
+
+To reproduce the installer, install NSIS 3.11 (Windows or Linux) and the SDK below,
+then run `python scripts/package_windows.py`. DOTNET and MAKENSIS optionally select
+the executables. Output is artifacts/0.1.1-preview. The build includes a source
+commit/dirty-state manifest and SHA-256 hashes. The installer bundles a compressed
+self-contained single-file app; .NET extracts its native runtime cache on first run.
+
+For this cloud's locally extracted NSIS set MAKENSIS to
+/workspace/.build-tools/nsis/usr/bin/makensis and NSISDIR to
+/workspace/.build-tools/nsis/usr/share/nsis. Debian package signatures/checksums were
+preserved; extraction required no system installation or admin access.
+
 ## Prerequisites
 
 .NET SDK 10.0.403 (global.json allows later patches) and Python 3.12+. There are
@@ -15,8 +46,9 @@ dotnet publish src/WinFix.Agent/WinFix.Agent.csproj -c Release -r win-x64 --self
 
 The resulting directory is the portable application, including WinFix.Agent.exe.
 Keep the entire directory together. It is unsigned and not Windows-tested here;
-do not bypass SmartScreen or security policy. There is no installer or Windows
-Service mode yet. GUI, repairs and certificate/CryptoPro diagnostics are not present.
+do not bypass SmartScreen or security policy. The optional NSIS installer above is
+available; Windows Service mode, GUI automation, repairs and certificate/CryptoPro
+diagnostics are not present.
 
 Manual GitHub Actions validation is in .github/workflows/validate.yml, with Linux
 and Windows jobs. Check available GitHub Actions quota before running, or run locally

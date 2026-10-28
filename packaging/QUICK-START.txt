@@ -1,0 +1,35 @@
+WinFix AI 0.1.1 Preview - Windows x64
+
+1. Run WinFixAI-Setup-0.1.1-preview.exe using your normal Windows account.
+2. Open WinFix AI from the Start menu or desktop shortcut.
+3. Choose English or Russian.
+4. Choose 1 to collect basic diagnostics. The private report location is displayed.
+5. Choose 2 only for a LOCAL test session; type START to authorize it.
+6. Press Enter in the active session to STOP and disconnect.
+
+No Python, .NET download, administrator account, or paid AI API is required.
+The app stays visible. It does not run at login or install a service.
+Remote access still needs technician configuration. This preview does not repair
+Windows, control the desktop, or diagnose certificate/CryptoPro problems yet.
+
+Uninstall through Windows Settings > Apps > WinFix AI, or its Start menu entry.
+Close the app first. Private reports/sessions remain in:
+%LOCALAPPDATA%\WinFixAI\Data
+Archive any needed audit records and remove that folder yourself when done.
+Do not send session credentials or private certificate keys in chat or GitHub.
+
+Unsigned preview: cross-built and protocol-tested on Linux; installation and
+execution on Windows still require validation. Do not bypass SmartScreen or
+your organization's security policy. Only install software you trust.
+
+РУССКИЙ
+1. Запустите установщик из обычной учётной записи Windows.
+2. Откройте WinFix AI через меню «Пуск» или ярлык на рабочем столе.
+3. Выберите русский язык.
+4. Пункт 1 сохраняет базовый диагностический отчёт.
+5. Пункт 2 запускает только ЛОКАЛЬНЫЙ сеанс после ввода СТАРТ.
+6. Нажмите Enter в активном сеансе для остановки и отключения.
+Для удалённого подключения требуется отдельная настройка специалистом.
+Python, отдельная установка .NET и платный API ИИ не требуются.
+Это неподписанная предварительная версия; проверка установки в Windows ещё
+не выполнена. Не обходите SmartScreen и правила безопасности организации.

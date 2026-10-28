@@ -1,5 +1,34 @@
 # Test report
 
+## 0.1.1 preview installer milestone — 2026-10-28
+
+User requested an easy-to-install EXE and GitHub upload. Added a per-user NSIS
+installer and English/Russian console launch flow without changing diagnostic
+permissions or claiming Phase 0 remote acceptance.
+
+- Release build passed with 0 warnings/errors; **29 tests passed, 0 failed/skipped**.
+  New tests exercise both languages, private local report storage, decline/EOF
+  behavior, non-Windows guard, explicit consent, a live mock HTTPS request, Enter
+  stop, disconnected endpoint and absence of token disclosure.
+- Windows self-contained, compressed single-file publish succeeded. NSIS 3.11
+  compiled the English/Russian setup EXE with an uninstaller and per-user shortcuts.
+- 7-Zip extracted the installer; the bundled WinFixAI.exe hash matched the published
+  app exactly. License/quick-start files were present. This is payload verification,
+  not actual installation/uninstallation execution.
+- A Linux single-file build launched its Russian demo menu and wrote a private mock
+  report successfully. This verifies bundled launch mechanics on Linux only.
+- NSIS/7-Zip were obtained through signed Debian package metadata with checksum
+  verification, then extracted under /workspace/.build-tools without system changes.
+- GitHub REST API read/release access returned Forbidden, including with existing
+  authentication. Git pushes remain usable; binary distribution uses a versioned
+  repository directory instead of claiming a GitHub Release was published.
+
+Final downloadable artifact hashes/source provenance are in
+downloads/v0.1.1-preview/build-manifest.json and SHA256SUMS.txt. Windows installation,
+shortcuts, ACLs, uninstallation, bundled runtime execution, remote connectivity and
+SmartScreen behavior remain **unrun**. No Windows host is available. Earlier Phase 0
+results below are historical, not the current suite count.
+
 Environment: Linux x64 cloud instance, Python 3.12.14, .NET SDK 10.0.403 /
 runtime 10.0.14. Date: 2026-10-28. See HANDOFF.md for the verified source commit.
 

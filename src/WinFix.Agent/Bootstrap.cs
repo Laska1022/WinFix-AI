@@ -12,20 +12,7 @@ public static class Bootstrap
 {
     public static void Create(string directory)
     {
-        var path = Path.GetFullPath(directory);
-        if (Directory.Exists(path) || File.Exists(path)) throw new IOException("Choose a new private directory; refusing to overwrite credentials.");
-        Directory.CreateDirectory(path);
-        // Protect credentials BEFORE writing. Init must be run by the authorizing owner.
-        if (OperatingSystem.IsWindows())
-        {
-            var sid = WindowsIdentity.GetCurrent().User?.Value ?? throw new InvalidOperationException("No Windows identity");
-            var start = new ProcessStartInfo("icacls.exe") { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true };
-            foreach (var arg in new[] { path, "/inheritance:r", "/grant:r", $"*{sid}:(OI)(CI)F", "*S-1-5-18:(OI)(CI)F" }) start.ArgumentList.Add(arg);
-            using var process = Process.Start(start) ?? throw new IOException("Cannot secure credential directory");
-            process.WaitForExit();
-            if (process.ExitCode != 0) throw new IOException("Cannot secure credential directory; no credentials written");
-        }
-        else File.SetUnixFileMode(path, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        var path = PrivateDirectory.Create(directory);
 
         using var rsa = RSA.Create(3072);
         var request = new CertificateRequest("CN=localhost", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -45,5 +32,28 @@ public static class Bootstrap
             "127.0.0.1", 8443, Path.Combine(path, "server.pfx"), Path.Combine(path, "audit.jsonl"), Path.Combine(path, "STOP"), false);
         File.WriteAllText(Path.Combine(path, "agent.json"), JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true }));
         Console.WriteLine("Owner-authorized, one-hour read-only session initialized. Credentials are in the private directory, never printed. See docs/SETUP.md before starting.");
+    }
+}
+
+public static class PrivateDirectory
+{
+    public static string Create(string directory)
+    {
+        var path = Path.GetFullPath(directory);
+        if (Directory.Exists(path) || File.Exists(path)) throw new IOException("Choose a new private directory; refusing to overwrite existing data.");
+        Directory.CreateDirectory(path);
+        // Protect credentials and reports BEFORE writing. Never use an elevated identity.
+        if (OperatingSystem.IsWindows())
+        {
+            var sid = WindowsIdentity.GetCurrent().User?.Value ?? throw new InvalidOperationException("No Windows identity");
+            var start = new ProcessStartInfo("icacls.exe") { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true };
+            foreach (var arg in new[] { path, "/inheritance:r", "/grant:r", $"*{sid}:(OI)(CI)F", "*S-1-5-18:(OI)(CI)F" }) start.ArgumentList.Add(arg);
+            using var process = Process.Start(start) ?? throw new IOException("Cannot secure credential directory");
+            process.WaitForExit();
+            if (process.ExitCode != 0) throw new IOException("Cannot secure credential directory; no credentials written");
+        }
+        else File.SetUnixFileMode(path, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+
+        return path;
     }
 }

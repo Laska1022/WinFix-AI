@@ -42,6 +42,16 @@ The provided cloud onboarding contract says VPN is platform-managed in an egress
 proxy sidecar; it specifically does not call for installing a VPN client here.
 See FEASIBILITY.md for observations, sources, and the comparison with a VPS relay.
 
+## Windows launch and packaging
+
+Launching without arguments opens an English/Russian console menu. Basic local
+reports reuse the API's read-only collector and are saved in a private directory.
+The local session option creates fresh credentials only after consent, binds
+loopback, and stops on Enter. Developer --demo-menu labels synthetic evidence.
+The NSIS installer installs a self-contained single-file app per user, shortcuts
+and an uninstaller. It does not register a service, open firewall ports, change
+root trust, or add auto-start entries. Windows execution remains unverified.
+
 ## Deferred components
 
 - Phase 1: Windows Service host, event logs, services, named read-only diagnostics.
@@ -51,7 +61,7 @@ See FEASIBILITY.md for observations, sources, and the comparison with a VPS rela
   never UAC/secure-desktop bypass or automation of a locked session.
 - Phase 4: resumable cases and local searchable knowledge base without paid embeddings.
 - Phase 5: English/Russian dashboard, approvals and emergency stop.
-- Phase 6: signed packaging, installers, revocation/rotation, security and OS matrix.
+- Phase 6: signed packaging, installer validation, revocation/rotation, security and OS matrix.
 - Optional relay: outbound agent polling over HTTPS, separate device and technician
   identities, scoped expiring jobs, no AI inference. Transport interface exists;
   relay delivery, persistence, and multi-device identity do not yet exist.

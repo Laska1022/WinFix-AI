@@ -8,6 +8,11 @@ credential and device binding; persisted replay protection; bounded audit journa
 local stop; portable Windows cross-build; reproducible tests; manual Windows/Linux
 CI workflow; full architecture, setup, threat model and account-independent handoff.
 
+User-requested packaging milestone: self-contained Windows single-file app and NSIS
+per-user setup EXE with shortcuts/uninstaller; English/Russian console menu, private
+local reports and explicit local-session consent/stop. 29 Linux tests pass. The
+installer compiles; real Windows installation and uninstallation remain untested.
+
 Linux build and integration checks pass. No Windows host is available. Neither the
 real Windows diagnostics path nor Codex-to-Windows networking has been verified.
 Do not call Phase 0 complete or proceed as though Phase 1's prerequisite passed.
@@ -15,7 +20,7 @@ See TEST_REPORT.md for the precise current test results and HANDOFF.md for commi
 
 Deferred: Windows Service mode, event logs/services/PowerShell diagnostics, repairs,
 approval/elevation, certificate/CryptoPro diagnostics, GUI companion, relay, dashboard,
-knowledge base, installer and production hardening. No paid AI dependency exists.
+knowledge base, installer validation/signing and production hardening. No paid AI dependency exists.
 
 Next: P0 acceptance in TASK_QUEUE.md. First unblock official documentation access
 and obtain an owner-authorized Windows test host/private HTTPS route. Default client

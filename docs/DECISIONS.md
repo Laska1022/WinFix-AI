@@ -19,3 +19,10 @@
   default client. Windows CI is manually triggered to avoid surprise quota usage.
 - **D006 — Account-independent continuity.** Full specification and handoff live in
   Git, no secrets; branch pushes must not overwrite concurrent work. No paid AI API.
+- **D007 — User-requested easy-install packaging.** Add a self-contained Windows EXE,
+  per-user NSIS setup and visible English/Russian console menu while the remote
+  Windows acceptance gate remains pending. Local diagnostics need no credentials;
+  a local listener requires explicit consent. Retain private data on uninstall.
+  GitHub REST release operations are blocked; upload the ~44 MB setup binary to a
+  versioned downloads directory through working Git authentication, with checksums
+  and source provenance. Release assets can replace this distribution path later.

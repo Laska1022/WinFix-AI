@@ -43,9 +43,18 @@ to revoke it permanently. No third-party penetration review has occurred.
 
 Bootstrap/ACL handling, supported Windows versions and service identity separation
 are unverified on Windows. Secure credential storage beyond private files (e.g.
-DPAPI), signed binaries, installer, automatic rotation, RBAC, multi-device registry,
+DPAPI), signed binaries, installer validation, automatic rotation, RBAC, multi-device registry,
 safe audit export/retention and remote approval UI are future work.
 
 Do not commit raw diagnostics: hostname/time zone can identify a customer. Record
 sanitized acceptance outcomes only. No customer files, passwords, certificate private
 keys, or certificate passwords belong in logs, reports or GitHub.
+
+The user-requested installer runs per user without elevation. It writes program files,
+desktop/Start menu shortcuts and an HKCU uninstall entry; no service, firewall rule,
+certificate trust or login auto-start is added. Uninstall removes only known program
+files/shortcuts and retains private data for explicit owner cleanup. Close the app
+before uninstalling. The console menu requires consent before opening a local test
+listener. Local reports also use protected directories. Its explicit --demo-menu
+mode cannot supply genuine Windows acceptance evidence. Self-contained .NET bundles
+may extract native runtime files into the user's .NET temporary cache on first run.

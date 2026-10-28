@@ -2,7 +2,12 @@
 
 - Project: WinFix AI, authorized Windows diagnostics and future assisted repair.
 - Phase: Phase 0 locally tested prototype; real Windows/private-network gate pending.
-- Active branch: feat/phase0-secure-diagnostics.
+- Active branch: feat/windows-easy-install (created from the verified Phase 0 branch).
+- Current milestone: user requested easy EXE installation/use and GitHub upload.
+  NSIS per-user installer, self-contained Windows app, English/Russian console menu,
+  private local reports, consent and stop controls are implemented. 29 tests pass.
+  Windows execution and installation remain unverified. Current source/binary commit
+  provenance will be recorded in the download manifest and final handoff update.
 - Latest verified code commit: `e8cff88be1abf2e690053516abed316483803438`
   (`Implement Phase 0 read-only HTTPS diagnostics prototype`). A later documentation-only
   commit records this hash; use `git log -1` for the branch's documentation tip.
@@ -24,7 +29,8 @@ Windows cross-build and manual CI. No paid LLM API is used.
 
 All Phase 1+ features remain incomplete, including service host, event logs/services,
 repair approvals, certificate/CryptoPro diagnostics, UI automation, relay, dashboard,
-and installer. Windows platform-specific code and portable executable are untested.
+and production hardening. A per-user installer is now implemented; its execution and
+all Windows platform-specific behavior remain untested.
 
 ## Blockers and configuration
 
@@ -65,3 +71,21 @@ task's filesystem restoration and networking have not yet been tested.
 
 If the Windows prerequisite is still missing, report that precise blocker instead
 of claiming remote functionality or rebuilding the completed HTTPS prototype.
+
+## Packaging continuation
+
+Read packaging/QUICK-START.txt and downloads/v0.1.1-preview/README.md. Rebuild with
+`python scripts/package_windows.py` using .NET SDK 10.0.403 and NSIS 3.11. In this
+cloud set DOTNET=/workspace/.dotnet/dotnet,
+DOTNET_CLI_HOME=/workspace/.dotnet-home, NUGET_PACKAGES=/workspace/.nuget/packages,
+MAKENSIS=/workspace/.build-tools/nsis/usr/bin/makensis and
+NSISDIR=/workspace/.build-tools/nsis/usr/share/nsis. Build output is ignored under
+artifacts/0.1.1-preview. The published preview installer belongs in the versioned
+downloads directory with provenance/checksums. Do not commit private session data.
+
+The GitHub REST API is blocked (Forbidden); Git pushes work. Do not ask for a token
+merely because the API is blocked or attempt to extract platform credentials.
+This upload is a repository download, not a GitHub Release asset. Move future binaries
+to releases when supported access is available. Do not force push or overwrite
+published versioned binaries. Next acceptance includes Windows install/start/menu/
+report/session-stop/uninstall/data-retention checks, then the existing private-route gate.

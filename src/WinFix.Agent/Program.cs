@@ -1,10 +1,28 @@
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using WinFix.Agent;
+
+var interactive = args.Length == 0 || (args.Length == 1 && args[0] == "--demo-menu");
+if (interactive)
+{
+    try
+    {
+        var path = InteractiveConsole.Select(args.Length == 1);
+        if (path is null) return;
+        args = new[] { "serve", path };
+    }
+    catch (Exception error) when (error is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
+    {
+        Console.WriteLine(InteractiveConsole.Text("Setup failed. Check folder permissions and available disk space. Press Enter to close.",
+            "Ошибка настройки. Проверьте права доступа к папке и свободное место. Нажмите Enter для выхода."));
+        Console.ReadLine();
+        Environment.ExitCode = 1;
+        return;
+    }
+}
 
 if (args.Length == 2 && args[0] == "init")
 {
@@ -34,7 +52,7 @@ builder.WebHost.ConfigureKestrel(server =>
     server.Limits.MaxConcurrentConnections = 32;
     server.Listen(IPAddress.Parse(config.BindAddress), config.Port, listen => listen.UseHttps(certificate));
 });
-var app = builder.Build();
+await using var app = builder.Build();
 app.MapPost("/v1/diagnostics/system", async (HttpContext context) =>
 {
     context.Response.Headers.CacheControl = "no-store";
@@ -74,16 +92,7 @@ app.MapPost("/v1/diagnostics/system", async (HttpContext context) =>
             deviceId = config.DeviceId,
             collectedAt = DateTimeOffset.UtcNow,
             mock = config.Mock,
-            system = new
-            {
-                platform = config.Mock ? "Mock" : "Windows",
-                computerName = config.Mock ? "MOCK-PC" : Environment.MachineName,
-                osDescription = config.Mock ? "Synthetic test fixture" : RuntimeInformation.OSDescription,
-                osVersion = config.Mock ? "fixture" : Environment.OSVersion.Version.ToString(),
-                architecture = RuntimeInformation.OSArchitecture.ToString(),
-                uptimeMilliseconds = Environment.TickCount64,
-                timeZone = TimeZoneInfo.Local.Id
-            }
+            system = SystemInformation.Collect(config.Mock)
         };
         audit.Record(requestId, config.TechnicianId, "completed");
         return Results.Json(result);
@@ -91,8 +100,31 @@ app.MapPost("/v1/diagnostics/system", async (HttpContext context) =>
     catch (IOException) { return Results.Json(new { error = "audit_unavailable" }, statusCode: 503); }
     catch (UnauthorizedAccessException) { return Results.Json(new { error = "audit_unavailable" }, statusCode: 503); }
 });
-Console.WriteLine($"WinFix READ ONLY active; device={config.DeviceId}; mock={config.Mock}. Create the configured stop file or press Ctrl+C to disconnect.");
-await app.RunAsync();
+if (interactive)
+{
+    try
+    {
+        await app.StartAsync();
+        Console.WriteLine(InteractiveConsole.Text("LOCAL SESSION ACTIVE. Press Enter to STOP and disconnect.",
+            "ЛОКАЛЬНЫЙ СЕАНС АКТИВЕН. Нажмите Enter для ОСТАНОВКИ и отключения."));
+        Console.WriteLine($"https://127.0.0.1:{config.Port} | Device: {config.DeviceId} | Expires: {config.ExpiresAt:O}");
+        await Task.WhenAny(app.WaitForShutdownAsync(), Task.Run(() => Console.ReadLine()));
+        File.WriteAllText(config.StopFile, "Stopped by owner");
+        await app.StopAsync();
+    }
+    catch (IOException)
+    {
+        Console.WriteLine(InteractiveConsole.Text("Could not start or finish the session. Close any other WinFix session and check disk access. Press Enter to exit.",
+            "Не удалось запустить или завершить сеанс. Закройте другой сеанс WinFix и проверьте доступ к диску. Нажмите Enter для выхода."));
+        Console.ReadLine();
+        Environment.ExitCode = 1;
+    }
+}
+else
+{
+    Console.WriteLine($"WinFix READ ONLY active; device={config.DeviceId}; mock={config.Mock}. Create the configured stop file or press Ctrl+C to disconnect.");
+    await app.RunAsync();
+}
 
 namespace WinFix.Agent
 {

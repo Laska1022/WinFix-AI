@@ -1,5 +1,11 @@
 # Task queue
 
+User-requested packaging step implemented ahead of the Windows acceptance gate:
+per-user EXE installer, self-contained app, English/Russian console menu, local
+diagnostic reports and consent/stop flow. This does not close the Phase 0 gate.
+Next Windows test must include installer, shortcuts, first-run .NET extraction,
+report ACLs, session start/stop, and uninstall/data retention.
+
 ## P0 — Finish Phase 0 acceptance
 
 1. Review current official Codex Cloud network/VPN and Tailscale documentation and
@@ -33,5 +39,5 @@ future operations. No arbitrary PowerShell input.
 - Interactive desktop companion with visible consent and secure-session limits.
 - Research/repair/report workflows and searchable local knowledge base.
 - English/Russian responsive dashboard, approvals, emergency stop.
-- Optional outbound relay, secure enrollment/revocation, installer, signing and
+- Optional outbound relay, secure enrollment/revocation, installer validation, signing and
   Windows Server/Server Core matrix; production security review.
