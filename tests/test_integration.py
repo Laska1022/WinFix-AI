@@ -161,7 +161,7 @@ class AgentIntegration(unittest.TestCase):
         self.stop()
         # Valid journal just below its bound; next acceptance must fail, on Windows too.
         entry = json.dumps({"At": dt.datetime.now(dt.timezone.utc).isoformat(),
-                            "RequestId": None, "TechnicianId": None, "Outcome": "test"})
+                            "RequestId": None, "TechnicianId": None, "Outcome": "unauthorized"})
         padding = " " * (10 * 1024 * 1024 - len(entry) - 10)
         Path(self.config["AuditPath"]).write_text(entry + padding + "\n")
         self.start()
@@ -172,6 +172,80 @@ class AgentIntegration(unittest.TestCase):
         Path(self.config["AuditPath"]).write_text("{interrupted write")
         result = subprocess.run([DOTNET, str(DLL), "serve", str(self.path)], capture_output=True, timeout=10)
         self.assertNotEqual(result.returncode, 0)
+
+    def assert_audit_refuses_startup(self, contents):
+        journal = Path(self.config["AuditPath"])
+        journal.write_text(contents)
+        original = journal.read_bytes()
+        try:
+            result = subprocess.run([DOTNET, str(DLL), "serve", str(self.path)],
+                                    capture_output=True, timeout=5)
+        except subprocess.TimeoutExpired:
+            self.fail("Agent remained running with an invalid audit record")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertTrue(b"InvalidDataException" in result.stderr or b"JsonException" in result.stderr,
+                        result.stderr.decode(errors="replace"))
+        self.assertNotIn(b"WinFix READ ONLY active", result.stdout)
+        self.assertEqual(journal.read_bytes(), original, "Invalid history must not be rewritten")
+
+    def test_incomplete_audit_cannot_erase_replay_reservation(self):
+        payload = self.payload()
+        self.assertEqual(self.send(payload)[0], 200)
+        self.stop()
+        records = Path(self.config["AuditPath"]).read_text().splitlines()
+        self.assertEqual(json.loads(records[0])["Outcome"], "accepted")
+        records[0] = "{}"
+        self.assert_audit_refuses_startup("\n".join(records) + "\n")
+
+    def test_invalid_audit_fields_refuse_startup(self):
+        self.stop()
+        valid = {"At": dt.datetime.now(dt.timezone.utc).isoformat(),
+                 "RequestId": str(uuid.uuid4()), "TechnicianId": self.config["TechnicianId"],
+                 "Outcome": "accepted"}
+        cases = [({}, "empty object")]
+        for field in valid:
+            missing = valid.copy(); del missing[field]
+            cases.extend([(missing, "missing " + field),
+                          ({**valid, field: None}, "null " + field)])
+        for field, value in (("At", "not-a-date"), ("At", "0001-01-01T00:00:00+00:00"),
+                             ("At", 42), ("Outcome", "unknown"), ("Outcome", ""),
+                             ("RequestId", "bad-id"), ("RequestId", ""),
+                             ("TechnicianId", "bad-id"), ("TechnicianId", 42)):
+            cases.append(({**valid, field: value}, f"invalid {field}: {value}"))
+        cases.extend([
+            ({**valid, "Outcome": "completed", "TechnicianId": None}, "completion without technician"),
+            ({**valid, "Outcome": "completed", "RequestId": None}, "completion without request"),
+            ({**valid, "Outcome": "replay", "TechnicianId": None, "RequestId": None}, "replay without request"),
+            ({**valid, "Outcome": "wrong_device", "TechnicianId": None, "RequestId": "bad-id"}, "denial with invalid request"),
+            ({**valid, "Outcome": "unauthorized"}, "early denial with identity"),
+        ])
+        for record, description in cases:
+            with self.subTest(description=description):
+                self.assert_audit_refuses_startup(json.dumps(record) + "\n")
+
+    def test_valid_audit_outcomes_preserve_replay_after_restart(self):
+        self.assertEqual(self.send(token="wrong")[0], 401)
+        wrong_device = self.payload(); wrong_device["deviceId"] = str(uuid.uuid4())
+        self.assertEqual(self.send(wrong_device)[0], 403)
+        self.assertEqual(self.send({"requestId": "invalid"})[0], 400)
+        self.assertEqual(self.send({"padding": "x" * 5000})[0], 413)
+        request = urllib.request.Request(self.url + "/v1/diagnostics/system", data=b"text",
+                                         headers={"Authorization": "Bearer " + self.token,
+                                                  "Content-Type": "text/plain"})
+        with self.assertRaises(urllib.error.HTTPError) as raised:
+            self.opener.open(request, timeout=5)
+        self.assertEqual(raised.exception.code, 415)
+        raised.exception.close()
+        stop_file = Path(self.config["StopFile"])
+        stop_file.touch()
+        self.assertEqual(self.send()[0], 503)
+        stop_file.unlink()
+        payload = self.payload()
+        self.assertEqual(self.send(payload)[0], 200)
+        self.assertEqual(self.send(payload)[0], 409)
+        self.stop(); self.start()
+        self.assertEqual(self.send(payload)[0], 409)
+        self.assertEqual(self.send()[0], 200)
 
     def test_real_mode_requires_windows(self):
         if os.name == "nt":

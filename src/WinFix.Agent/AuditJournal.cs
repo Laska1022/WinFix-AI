@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace WinFix.Agent;
 
@@ -14,14 +15,23 @@ public sealed class AuditJournal : IDisposable
     public AuditJournal(string path)
     {
         stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
-        if (stream.Length > MaximumBytes) throw new IOException("Audit journal full; archive and rotate credentials.");
-        using var reader = new StreamReader(stream, Encoding.UTF8, leaveOpen: true);
-        while (reader.ReadLine() is { } line)
+        try
         {
-            var entry = JsonSerializer.Deserialize<Entry>(line) ?? throw new InvalidDataException("Invalid audit entry");
-            if (entry.Outcome == "accepted") accepted.Add(entry.RequestId ?? throw new InvalidDataException("Missing request ID"));
+            if (stream.Length > MaximumBytes) throw new IOException("Audit journal full; archive and rotate credentials.");
+            using var reader = new StreamReader(stream, Encoding.UTF8, leaveOpen: true);
+            while (reader.ReadLine() is { } line)
+            {
+                var entry = JsonSerializer.Deserialize<Entry>(line) ?? throw new InvalidDataException("Invalid audit entry");
+                entry.Validate();
+                if (entry.Outcome == "accepted") accepted.Add(entry.RequestId!);
+            }
+            stream.Seek(0, SeekOrigin.End);
         }
-        stream.Seek(0, SeekOrigin.End);
+        catch
+        {
+            stream.Dispose();
+            throw;
+        }
     }
 
     public bool TryAccept(string requestId, string technicianId)
@@ -39,8 +49,9 @@ public sealed class AuditJournal : IDisposable
     {
         lock (gate)
         {
-            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(
-                new Entry(DateTimeOffset.UtcNow, requestId, technicianId, outcome)) + "\n");
+            var entry = new Entry(DateTimeOffset.UtcNow, requestId, technicianId, outcome);
+            entry.Validate();
+            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(entry) + "\n");
             if (stream.Length + bytes.Length > MaximumBytes) throw new IOException("Audit journal full");
             stream.Write(bytes);
             stream.Flush(flushToDisk: true);
@@ -48,5 +59,27 @@ public sealed class AuditJournal : IDisposable
     }
 
     public void Dispose() => stream.Dispose();
-    private sealed record Entry(DateTimeOffset At, string? RequestId, string? TechnicianId, string Outcome);
+    private sealed record Entry(
+        [property: JsonRequired] DateTimeOffset At,
+        [property: JsonRequired] string? RequestId,
+        [property: JsonRequired] string? TechnicianId,
+        [property: JsonRequired] string Outcome)
+    {
+        public void Validate()
+        {
+            // Null identities are intentional only for the relevant denial outcomes.
+            // Missing fields, unknown outcomes and malformed IDs must never erase history.
+            var validIdentities = Outcome switch
+            {
+                "accepted" or "completed" => Guid.TryParseExact(RequestId, "D", out _) &&
+                    Guid.TryParseExact(TechnicianId, "D", out _),
+                "wrong_device" or "replay" => Guid.TryParseExact(RequestId, "D", out _) && TechnicianId is null,
+                "emergency_stop" or "unauthorized" or "json_required" or "invalid_request" or "request_too_large"
+                    => RequestId is null && TechnicianId is null,
+                _ => false
+            };
+            if (At == default || !validIdentities)
+                throw new InvalidDataException("Invalid audit entry; archive and rotate credentials.");
+        }
+    }
 }
