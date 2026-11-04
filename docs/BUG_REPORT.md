@@ -7,11 +7,21 @@ Report branch: `review/phase0-bug-report-20261104`.
 Reviewed the agent bootstrap, HTTPS endpoint, audit journal, Python client,
 existing tests and project documentation. This is a bounded code review, not a
 complete security assessment. All three findings below were reproduced locally.
-Application code has not been changed; these bugs remain open.
+Current status: BUG-01 is fixed on `fix/audit-record-validation-20261104` in
+code commit `a2bdfc1d482d51df3c078cb4a729dbdf1e209817`. BUG-02 and BUG-03 remain open.
+The original observations below describe the reviewed source commit above.
 
-## BUG-01 — Incomplete audit records are silently accepted (medium)
+## BUG-01 — Incomplete audit records are silently accepted (medium; fixed)
 
-Location: `src/WinFix.Agent/AuditJournal.cs:19-22`.
+Original location: `src/WinFix.Agent/AuditJournal.cs:19-22`.
+
+Fix verified on 2026-11-04: all five serialized fields must be present; timestamps,
+known outcomes and outcome-specific UUID/null identities are validated before
+replay history is loaded. Invalid journals prevent startup without being rewritten.
+New entries use the same validation, and a failed load releases its file handle.
+Regression coverage includes the original `{}` replacement, 25 malformed-record
+cases and restart compatibility with all legitimate emitted outcomes. The full
+suite passes: 27 tests, 0 failed/skipped; Release build 0 warnings/errors.
 
 The journal loader deserializes records without checking required fields. A JSON
 object such as `{}` becomes an entry with default/null fields. It is ignored
@@ -107,7 +117,11 @@ status/header/chunk framing. Preserve TLS verification and existing size limits.
 - Missing Windows acceptance, GUI, service mode and repairs are existing project
   limitations/deferred scope, not newly discovered implementation bugs.
 
-## Reproduction script
+## Historical reproduction script
+
+This script asserts buggy behavior at the original reviewed commit. BUG-01 now
+correctly stops its restart step; use the automated integration regressions to
+validate the fix instead of expecting this historical script to pass.
 
 Build with `bash scripts/cloud_setup.sh` from `/workspace/WinFix-AI`, then copy
 this script to `/tmp/winfix_review.py` and run from the checkout root:

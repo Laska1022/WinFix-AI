@@ -50,3 +50,14 @@ release; rebuild from source or manually run the Windows workflow for CI artifac
 ## Bug review — 2026-11-04
 
 Reviewed source `bd78e2cc1ce4157e5d259a0f43824f6359fa1ed5` on branch `review/phase0-bug-report-20261104`. `bash scripts/cloud_setup.sh` passed: Release build 0 warnings/errors, 24 tests passed, 0 failed/skipped (15.993 seconds). Three additional targeted probes confirmed open bugs; exact reproduction code, commands and outcomes are in [BUG_REPORT.md](BUG_REPORT.md). Linux mock results only; no Windows or CI run.
+
+## BUG-01 fix — 2026-11-04
+
+Verified code commit: `a2bdfc1d482d51df3c078cb4a729dbdf1e209817`.
+Branch: `fix/audit-record-validation-20261104`.
+
+- Before the fix, `DOTNET=/workspace/.dotnet/dotnet DOTNET_CLI_HOME=/workspace/.dotnet-home python3 -m unittest tests.test_integration.AgentIntegration.test_incomplete_audit_cannot_erase_replay_reservation -v` failed as expected: the agent stayed running after an accepted record was replaced by `{}` (1 test, 1 failure).
+- After the fix, `bash scripts/cloud_setup.sh` passed: Release build **0 warnings, 0 errors**; **27 tests passed, 0 failed, 0 skipped**, 23.296 seconds.
+- Three new tests cover the original reproduction; 25 invalid-record subcases (missing/null fields, invalid/default timestamp, unknown outcome and malformed/mismatched identities); and legitimate denial/success/replay records surviving a restart. Invalid journal bytes are preserved.
+- The full-journal fixture now uses the legitimate `unauthorized` outcome instead of the former synthetic `test` outcome, retaining its near-capacity/HTTP 503 assertion.
+- `git diff --check` passed. No Windows execution, Windows cross-publish or GitHub Actions run was performed for this fix. Linux integration used explicit mock diagnostics. BUG-02 and BUG-03 remain open.

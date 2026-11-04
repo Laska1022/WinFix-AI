@@ -23,4 +23,4 @@ refuses mock evidence, so it can serve as the real connection acceptance command
 
 ## Bug review — 2026-11-04
 
-A source review on 2026-11-04 confirmed three open bugs in audit loading/framing and client protocol-error handling. See [BUG_REPORT.md](BUG_REPORT.md) for impact, reproductions and suggested fixes. Existing tests pass; no fixes or Windows acceptance are claimed.
+The source review found three bugs. BUG-01 is now fixed: invalid audit records prevent startup before replay history can be silently lost. All 27 tests pass. BUG-02 (journal newline framing) and BUG-03 (client protocol errors) remain open; see [BUG_REPORT.md](BUG_REPORT.md). Real-Windows acceptance remains pending.

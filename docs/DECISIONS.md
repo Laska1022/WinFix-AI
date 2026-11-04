@@ -23,3 +23,9 @@
 ## Bug review — 2026-11-04
 
 **D007 — Record verified review findings before remediation.** The 2026-11-04 review reports three reproduced bugs in [BUG_REPORT.md](BUG_REPORT.md). This documentation-only change does not alter agent behavior, claim fixes or satisfy Windows acceptance.
+
+- **D008 — Validate audit records before accepting a session.** Require every serialized
+  field and validate non-default timestamps, known outcomes and outcome-specific
+  identities. Apply the same rules when writing. Refuse invalid history without
+  modification; retain legitimate rejection records with explicit null identities.
+  This fixes BUG-01; newline framing (BUG-02) is a separate outstanding issue.
