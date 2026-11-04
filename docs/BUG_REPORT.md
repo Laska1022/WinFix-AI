@@ -8,7 +8,9 @@ Reviewed the agent bootstrap, HTTPS endpoint, audit journal, Python client,
 existing tests and project documentation. This is a bounded code review, not a
 complete security assessment. All three findings below were reproduced locally.
 Current status: BUG-01 is fixed on `fix/audit-record-validation-20261104` in
-code commit `a2bdfc1d482d51df3c078cb4a729dbdf1e209817`. BUG-02 and BUG-03 remain open.
+code commit `a2bdfc1d482d51df3c078cb4a729dbdf1e209817`. BUG-02 is also fixed on
+`fix/audit-journal-framing-20261104` in code commit
+`96a40fc07af63ebfa68bf4a43477cfd1e3cd094e`. This branch includes both fixes. BUG-03 remains open.
 The original observations below describe the reviewed source commit above.
 
 ## BUG-01 — Incomplete audit records are silently accepted (medium; fixed)
@@ -49,9 +51,18 @@ outcome-specific request/technician IDs before accepting existing records. Rejec
 invalid records and require the documented archive/session-rotation procedure.
 Add regression coverage for valid JSON with missing or null required fields.
 
-## BUG-02 — Missing final newline causes delayed journal corruption (medium)
+## BUG-02 — Missing final newline causes delayed journal corruption (medium; fixed)
 
-Location: `src/WinFix.Agent/AuditJournal.cs:19-24,42-45`.
+Original location: `src/WinFix.Agent/AuditJournal.cs:19-24,42-45`.
+
+Fix verified on 2026-11-04: a nonempty journal must end in LF before any
+records are loaded or new requests served. A missing delimiter causes an
+InvalidDataException on the first restart, preserving the file byte for byte.
+Empty journals and complete LF/CRLF journals remain supported. Regression tests
+verify the original missing-newline case and valid restart/append/restart cycles
+with replay rejection. All 29 tests pass; Release build has 0 warnings/errors.
+Existing damaged journals require the documented archive/session-rotation process;
+the agent does not silently add delimiters or discard records.
 
 `ReadLine()` accepts a final JSON record without a newline. The writer then seeks
 to the exact end and appends another record without inserting a separator. Two

@@ -61,3 +61,14 @@ Branch: `fix/audit-record-validation-20261104`.
 - Three new tests cover the original reproduction; 25 invalid-record subcases (missing/null fields, invalid/default timestamp, unknown outcome and malformed/mismatched identities); and legitimate denial/success/replay records surviving a restart. Invalid journal bytes are preserved.
 - The full-journal fixture now uses the legitimate `unauthorized` outcome instead of the former synthetic `test` outcome, retaining its near-capacity/HTTP 503 assertion.
 - `git diff --check` passed. No Windows execution, Windows cross-publish or GitHub Actions run was performed for this fix. Linux integration used explicit mock diagnostics. BUG-02 and BUG-03 remain open.
+
+## BUG-02 fix — 2026-11-04
+
+Verified code commit: `96a40fc07af63ebfa68bf4a43477cfd1e3cd094e`.
+Branch: `fix/audit-journal-framing-20261104` (includes BUG-01).
+
+- Before the fix, `DOTNET=/workspace/.dotnet/dotnet DOTNET_CLI_HOME=/workspace/.dotnet-home python3 -m unittest tests.test_integration.AgentIntegration.test_missing_final_audit_newline_refuses_startup -v` failed as expected: the agent kept running after the final LF was removed (1 test, 1 failure).
+- After the fix, `bash scripts/cloud_setup.sh` passed: Release build **0 warnings, 0 errors**; **29 tests passed, 0 failed, 0 skipped**, 25.965 seconds.
+- The missing-newline regression checks rejection on the first restart, before the startup banner, with the original journal bytes preserved. A second test exercises an initially empty journal, explicit LF and CRLF framing, and restart/append/restart cycles with HTTP 409 replay rejection and HTTP 200 for fresh requests.
+- Test fixture writes disable newline translation so framing checks use exact bytes on both platforms. Linux was tested; this does not establish Windows execution.
+- `git diff --check` passed. Windows execution, Windows cross-publish and GitHub Actions were not run for this fix. BUG-03 remains open.

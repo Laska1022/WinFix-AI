@@ -2,15 +2,15 @@
 
 - Project: WinFix AI, authorized Windows diagnostics and future assisted repair.
 - Phase: Phase 0 locally tested prototype; real Windows/private-network gate pending.
-- Active branch: fix/audit-record-validation-20261104.
-- Latest verified code commit: `a2bdfc1d482d51df3c078cb4a729dbdf1e209817`
-  (`Reject incomplete and invalid audit records before startup`). This subsequent
+- Active branch: fix/audit-journal-framing-20261104.
+- Latest verified code commit: `96a40fc07af63ebfa68bf4a43477cfd1e3cd094e`
+  (`Reject audit journals missing the final record delimiter`). This subsequent
   documentation-only commit records its hash; use `git log -1` for the documentation tip.
-- GitHub continuity: select `fix/audit-record-validation-20261104` for this fix;
+- GitHub continuity: select `fix/audit-journal-framing-20261104` for both audit fixes;
   `feat/phase0-secure-diagnostics` is the original prototype branch. Do not assume
   a main branch exists. Verify local HEAD against the selected remote branch when
   continuing work.
-- Verified results for BUG-01: 27 tests passed, 0 failed/skipped; Release build
+- Verified results for BUG-02 (including BUG-01): 29 tests passed, 0 failed/skipped; Release build
   0 warnings/errors. An earlier Windows x64 cross-publish passed; it was not repeated
   for this fix, and Windows execution remains untested.
 - Repository at start: empty local and remote refs. No earlier completed features
@@ -70,4 +70,4 @@ of claiming remote functionality or rebuilding the completed HTTPS prototype.
 
 ## Bug review — 2026-11-04
 
-The 2026-11-04 review branch is `review/phase0-bug-report-20261104`, based on source `bd78e2cc1ce4157e5d259a0f43824f6359fa1ed5`. Read [BUG_REPORT.md](BUG_REPORT.md): three bugs were reproduced while all 24 existing tests passed. BUG-01 has since been fixed on `fix/audit-record-validation-20261104`; see the verified code commit above and TEST_REPORT.md for the 27-test result. Next: fix and regression-test BUG-02 and BUG-03, then continue the outstanding owner-authorized Windows/private-route acceptance; the Windows prerequisite remains unresolved.
+The 2026-11-04 review branch is `review/phase0-bug-report-20261104`, based on source `bd78e2cc1ce4157e5d259a0f43824f6359fa1ed5`. Read [BUG_REPORT.md](BUG_REPORT.md): three bugs were reproduced while all 24 existing tests passed. BUG-01 and BUG-02 have since been fixed on `fix/audit-journal-framing-20261104`; see the verified code commit above and TEST_REPORT.md for the 29-test result. Next: fix and regression-test BUG-03, then continue the outstanding owner-authorized Windows/private-route acceptance; the Windows prerequisite remains unresolved.

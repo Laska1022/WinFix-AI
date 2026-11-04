@@ -38,4 +38,4 @@ future operations. No arbitrary PowerShell input.
 
 ## Bug review — 2026-11-04
 
-BUG-01 is fixed and covered by integration regressions. Next, fix BUG-02 and BUG-03 in [BUG_REPORT.md](BUG_REPORT.md), adding coverage for missing final journal delimiters and malformed HTTPS responses. Preserve the real-Windows acceptance gate.
+BUG-01 and BUG-02 are fixed and covered by integration regressions. Next, fix BUG-03 in [BUG_REPORT.md](BUG_REPORT.md), adding coverage for malformed HTTPS responses. Preserve the real-Windows acceptance gate.

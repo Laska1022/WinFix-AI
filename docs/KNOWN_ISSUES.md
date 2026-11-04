@@ -22,4 +22,4 @@
 
 ## Bug review — 2026-11-04
 
-BUG-01 (incomplete audit entries accepted) is fixed in code commit `a2bdfc1d482d51df3c078cb4a729dbdf1e209817`. Two issues remain open in [BUG_REPORT.md](BUG_REPORT.md): a missing final newline breaks a later restart, and malformed HTTP status lines escape safe CLI error handling. The audit reproductions require local file damage/modification. Invalid existing audit records must be handled through the documented archive/session-rotation procedure; startup does not silently repair them.
+BUG-01 (incomplete audit entries accepted) is fixed in code commit `a2bdfc1d482d51df3c078cb4a729dbdf1e209817`. BUG-02 (missing final journal delimiter) is fixed in code commit `96a40fc07af63ebfa68bf4a43477cfd1e3cd094e`. BUG-03 remains open in [BUG_REPORT.md](BUG_REPORT.md): malformed HTTP status lines escape safe CLI error handling. The audit reproductions require local file damage/modification. Invalid existing audit records or missing final delimiters must be handled through the documented archive/session-rotation procedure; startup does not silently repair them.

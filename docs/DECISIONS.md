@@ -28,4 +28,12 @@
   field and validate non-default timestamps, known outcomes and outcome-specific
   identities. Apply the same rules when writing. Refuse invalid history without
   modification; retain legitimate rejection records with explicit null identities.
-  This fixes BUG-01; newline framing (BUG-02) is a separate outstanding issue.
+  This fixes BUG-01; newline framing (BUG-02) is addressed by D009 below.
+
+- **D009 — Refuse unterminated audit journals before serving requests.** A nonempty
+  journal must end in LF. Check the final byte before loading records, then rewind
+  so validation and replay reconstruction still cover the entire file. Support
+  empty journals and complete LF/CRLF records. Reject missing delimiters without
+  rewriting history; use the existing owner-directed archive/session-rotation
+  procedure. This fixes BUG-02 without inferring whether an interrupted write was
+  complete or silently repairing the active journal.
