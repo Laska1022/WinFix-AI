@@ -23,4 +23,4 @@ refuses mock evidence, so it can serve as the real connection acceptance command
 
 ## Bug review — 2026-11-04
 
-The source review found three bugs. BUG-01 and BUG-02 are fixed: invalid records and missing final journal delimiters prevent startup without modifying history. All 29 tests pass. BUG-03 (client protocol errors) remains open; see [BUG_REPORT.md](BUG_REPORT.md). Real-Windows acceptance remains pending.
+All three bugs from the source review are fixed on `fix/client-protocol-errors-20261104`: audit record validation, final journal delimiters and safe handling of client protocol errors. All 32 tests pass; see [BUG_REPORT.md](BUG_REPORT.md). Real-Windows acceptance remains pending.

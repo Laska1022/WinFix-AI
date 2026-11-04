@@ -37,3 +37,10 @@
   rewriting history; use the existing owner-directed archive/session-rotation
   procedure. This fixes BUG-02 without inferring whether an interrupted write was
   complete or silently repairing the active journal.
+
+- **D010 — Translate HTTP protocol failures at the transport boundary.** Catch
+  `http.client.HTTPException` during response opening and body reading, then raise
+  a generic `WinFixError` with suppressed chaining. Preserve existing HTTP status
+  handling, TLS verification and size limits. Exercise actual HTTP parsing using
+  in-memory response bytes so cross-platform regressions need no new dependency;
+  separately verify the real CLI against a local TLS fixture. This fixes BUG-03.

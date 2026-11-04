@@ -10,7 +10,9 @@ complete security assessment. All three findings below were reproduced locally.
 Current status: BUG-01 is fixed on `fix/audit-record-validation-20261104` in
 code commit `a2bdfc1d482d51df3c078cb4a729dbdf1e209817`. BUG-02 is also fixed on
 `fix/audit-journal-framing-20261104` in code commit
-`96a40fc07af63ebfa68bf4a43477cfd1e3cd094e`. This branch includes both fixes. BUG-03 remains open.
+`96a40fc07af63ebfa68bf4a43477cfd1e3cd094e`. BUG-03 is fixed in code commit
+`a43738bdf1d68a063555954d8fbee5be1ad7aa7e` on `fix/client-protocol-errors-20261104`.
+The latter branch includes all three fixes.
 The original observations below describe the reviewed source commit above.
 
 ## BUG-01 — Incomplete audit records are silently accepted (medium; fixed)
@@ -89,9 +91,23 @@ fail-closed policy, reject a missing final delimiter and require owner-directed
 archive/session rotation. Add a restart/append/restart regression case. Do not
 silently delete history or reset an active session's journal.
 
-## BUG-03 — Malformed HTTPS status escapes safe client error handling (medium)
+## BUG-03 — Malformed HTTPS status escapes safe client error handling (medium; fixed)
 
-Location: `tools/winfix_client.py:53-61` and the exception handler in `main()`.
+Original location: `tools/winfix_client.py:53-61` and the exception handler in `main()`.
+
+Fix verified on 2026-11-04: the transport converts `http.client.HTTPException`
+into a generic `WinFixError` with exception chaining suppressed. This covers errors
+while opening a response and while reading its body. The CLI then emits its
+existing generic failure message and exits 1. It does not print the protocol
+exception, traceback, synthetic credential or server marker. TLS verification
+and response-size checks remain enabled.
+
+Regression tests exercise the real Python HTTP parser for malformed status lines,
+overlong headers, invalid chunk sizes and truncated chunks, through both the
+transport and CLI entry point; valid HTTP still parses successfully. A separate
+local HTTPS fixture verified all four cases using the real CLI subprocess and an
+explicitly trusted temporary certificate. All 32 tests pass; Release build has
+0 warnings/errors.
 
 Neither exception handler catches `http.client.HTTPException`.
 `http.client.BadStatusLine` inherits from it, not from the exceptions currently

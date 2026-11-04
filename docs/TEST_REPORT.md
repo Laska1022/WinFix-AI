@@ -72,3 +72,14 @@ Branch: `fix/audit-journal-framing-20261104` (includes BUG-01).
 - The missing-newline regression checks rejection on the first restart, before the startup banner, with the original journal bytes preserved. A second test exercises an initially empty journal, explicit LF and CRLF framing, and restart/append/restart cycles with HTTP 409 replay rejection and HTTP 200 for fresh requests.
 - Test fixture writes disable newline translation so framing checks use exact bytes on both platforms. Linux was tested; this does not establish Windows execution.
 - `git diff --check` passed. Windows execution, Windows cross-publish and GitHub Actions were not run for this fix. BUG-03 remains open.
+
+## BUG-03 fix — 2026-11-04
+
+Verified code commit: `a43738bdf1d68a063555954d8fbee5be1ad7aa7e`.
+Branch: `fix/client-protocol-errors-20261104` (includes BUG-01 and BUG-02).
+
+- Before the fix, `python3 -m unittest tests.test_client.ClientTests.test_cli_protocol_errors_are_safe -v` reproduced the failure: 1 test with 4 subcase errors (`BadStatusLine`, `LineTooLong` and two `IncompleteRead` cases).
+- After the fix, `bash scripts/cloud_setup.sh` passed: Release build **0 warnings, 0 errors**; **32 tests passed, 0 failed, 0 skipped**, 26.993 seconds.
+- Three added tests cover the transport and CLI entry point with malformed status lines, overlong headers, invalid chunk sizes and truncated chunks, plus a valid HTTP response. They use the actual Python HTTP parser with in-memory bytes, assert safe error conversion/suppressed context and exact generic CLI output, and add no dependency to the Windows/Linux suite.
+- Independent functional check: `NO_PROXY=127.0.0.1 no_proxy=127.0.0.1 python3 /tmp/winfix_bug3_https.py` passed all 4 cases against the transport and actual CLI subprocess over verified loopback HTTPS. This temporary fixture used OpenSSL to generate a disposable certificate/key, supplied the certificate explicitly to the client and removed the private directory afterward. It confirmed the expected underlying protocol exception and generic CLI exit 1 with empty stdout; no traceback or synthetic server/credential text was printed. The temporary fixture is not a repository test dependency.
+- `git diff --check` passed. Linux execution only; no Windows execution, Windows cross-publish or GitHub Actions run for this fix. All three reported bugs are now fixed on this branch, while P0 Windows/private-route acceptance remains pending.
