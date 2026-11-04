@@ -175,7 +175,7 @@ class AgentIntegration(unittest.TestCase):
 
     def assert_audit_refuses_startup(self, contents):
         journal = Path(self.config["AuditPath"])
-        journal.write_text(contents)
+        journal.write_text(contents, newline="")
         original = journal.read_bytes()
         try:
             result = subprocess.run([DOTNET, str(DLL), "serve", str(self.path)],
@@ -187,6 +187,33 @@ class AgentIntegration(unittest.TestCase):
                         result.stderr.decode(errors="replace"))
         self.assertNotIn(b"WinFix READ ONLY active", result.stdout)
         self.assertEqual(journal.read_bytes(), original, "Invalid history must not be rewritten")
+
+    def test_missing_final_audit_newline_refuses_startup(self):
+        self.assertEqual(self.send()[0], 200)
+        self.stop()
+        contents = Path(self.config["AuditPath"]).read_bytes()
+        self.assertTrue(contents.endswith(b"\n"))
+        # Keep both complete JSON records, removing only the final delimiter.
+        self.assert_audit_refuses_startup(contents[:-1].decode("utf-8"))
+
+    def test_valid_audit_line_endings_survive_restart(self):
+        journal = Path(self.config["AuditPath"])
+        self.assertEqual(journal.read_bytes(), b"")
+        for ending in (b"\n", b"\r\n"):
+            with self.subTest(ending=ending):
+                payload = self.payload()
+                self.assertEqual(self.send(payload)[0], 200)
+                self.stop()
+                # Preserve every record while explicitly testing LF and CRLF bytes.
+                contents = journal.read_bytes().replace(b"\r\n", b"\n")
+                journal.write_bytes(contents.replace(b"\n", ending))
+                self.start()
+                self.assertEqual(self.send(payload)[0], 409)
+                next_payload = self.payload()
+                self.assertEqual(self.send(next_payload)[0], 200)
+                self.stop(); self.start()
+                self.assertEqual(self.send(next_payload)[0], 409)
+                self.assertEqual(self.send()[0], 200)
 
     def test_incomplete_audit_cannot_erase_replay_reservation(self):
         payload = self.payload()

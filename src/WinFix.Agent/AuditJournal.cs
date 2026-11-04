@@ -18,6 +18,15 @@ public sealed class AuditJournal : IDisposable
         try
         {
             if (stream.Length > MaximumBytes) throw new IOException("Audit journal full; archive and rotate credentials.");
+            if (stream.Length > 0)
+            {
+                // ReadLine accepts an unterminated last record. Appending to it would
+                // concatenate JSON objects and corrupt history on the next restart.
+                stream.Seek(-1, SeekOrigin.End);
+                if (stream.ReadByte() != '\n')
+                    throw new InvalidDataException("Unterminated audit entry; archive and rotate credentials.");
+                stream.Seek(0, SeekOrigin.Begin);
+            }
             using var reader = new StreamReader(stream, Encoding.UTF8, leaveOpen: true);
             while (reader.ReadLine() is { } line)
             {
