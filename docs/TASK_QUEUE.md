@@ -35,3 +35,7 @@ future operations. No arbitrary PowerShell input.
 - English/Russian responsive dashboard, approvals, emergency stop.
 - Optional outbound relay, secure enrollment/revocation, installer, signing and
   Windows Server/Server Core matrix; production security review.
+
+## Bug review — 2026-11-04
+
+Triage and fix BUG-01 through BUG-03 in [BUG_REPORT.md](BUG_REPORT.md), adding regression coverage for incomplete audit records, missing final journal delimiters and malformed HTTPS responses. Preserve the real-Windows acceptance gate.

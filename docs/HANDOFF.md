@@ -65,3 +65,7 @@ task's filesystem restoration and networking have not yet been tested.
 
 If the Windows prerequisite is still missing, report that precise blocker instead
 of claiming remote functionality or rebuilding the completed HTTPS prototype.
+
+## Bug review — 2026-11-04
+
+The 2026-11-04 review branch is `review/phase0-bug-report-20261104`, based on source `bd78e2cc1ce4157e5d259a0f43824f6359fa1ed5`. Read [BUG_REPORT.md](BUG_REPORT.md): three bugs were reproduced while all 24 existing tests passed. Application code is unchanged. Next: fix and regression-test those findings, then continue the outstanding owner-authorized Windows/private-route acceptance; the Windows prerequisite remains unresolved.

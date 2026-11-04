@@ -46,3 +46,7 @@ Local ignored output: artifacts/winfix-phase0-win-x64-unsigned.zip (48,529,347 b
 SHA-256: `48fae48f33d600cddabe90ad5935bd5afa0d0cedf0a2aa086a947bfebbc3eb6b`.
 The package is unsigned and Windows execution is untested. It is not a GitHub
 release; rebuild from source or manually run the Windows workflow for CI artifacts.
+
+## Bug review — 2026-11-04
+
+Reviewed source `bd78e2cc1ce4157e5d259a0f43824f6359fa1ed5` on branch `review/phase0-bug-report-20261104`. `bash scripts/cloud_setup.sh` passed: Release build 0 warnings/errors, 24 tests passed, 0 failed/skipped (15.993 seconds). Three additional targeted probes confirmed open bugs; exact reproduction code, commands and outcomes are in [BUG_REPORT.md](BUG_REPORT.md). Linux mock results only; no Windows or CI run.

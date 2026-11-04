@@ -19,3 +19,7 @@
   default client. Windows CI is manually triggered to avoid surprise quota usage.
 - **D006 — Account-independent continuity.** Full specification and handoff live in
   Git, no secrets; branch pushes must not overwrite concurrent work. No paid AI API.
+
+## Bug review — 2026-11-04
+
+**D007 — Record verified review findings before remediation.** The 2026-11-04 review reports three reproduced bugs in [BUG_REPORT.md](BUG_REPORT.md). This documentation-only change does not alter agent behavior, claim fixes or satisfy Windows acceptance.

@@ -20,3 +20,7 @@ knowledge base, installer and production hardening. No paid AI dependency exists
 Next: P0 acceptance in TASK_QUEUE.md. First unblock official documentation access
 and obtain an owner-authorized Windows test host/private HTTPS route. Default client
 refuses mock evidence, so it can serve as the real connection acceptance command.
+
+## Bug review — 2026-11-04
+
+A source review on 2026-11-04 confirmed three open bugs in audit loading/framing and client protocol-error handling. See [BUG_REPORT.md](BUG_REPORT.md) for impact, reproductions and suggested fixes. Existing tests pass; no fixes or Windows acceptance are claimed.

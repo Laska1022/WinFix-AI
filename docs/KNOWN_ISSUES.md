@@ -19,3 +19,7 @@
 - Windows CI is supplied but has not run. A Linux cross-build is not a Windows test.
 - All repair modules, certificate/CryptoPro diagnosis, GUI, dashboard, relay, approval
   workflows and production packaging remain unfinished. No paid AI API is required.
+
+## Bug review — 2026-11-04
+
+Three additional confirmed open issues are documented in [BUG_REPORT.md](BUG_REPORT.md): incomplete audit entries are accepted, a missing final newline breaks a later restart, and malformed HTTP status lines escape safe CLI error handling. The audit reproductions require local file damage/modification.
