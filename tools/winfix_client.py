@@ -2,6 +2,7 @@
 """Read-only HTTPS client. Uses configured HTTP(S) proxies and verified TLS."""
 import argparse
 import datetime as dt
+import http.client
 import json
 import os
 import ssl
@@ -57,6 +58,9 @@ class HttpsTransport:
                 raw = response.read(MAX_RESPONSE + 1)
         except urllib.error.HTTPError as exc:
             raise WinFixError(f"Agent rejected the request (HTTP {exc.code})") from None
+        except http.client.HTTPException:
+            # Protocol errors and their chained causes can contain peer-controlled text.
+            raise WinFixError("Agent returned an invalid HTTP response") from None
         except (urllib.error.URLError, TimeoutError, OSError):
             raise WinFixError("Connection failed; check TLS trust, proxy routing, hostname, and agent availability") from None
         if len(raw) > MAX_RESPONSE:
