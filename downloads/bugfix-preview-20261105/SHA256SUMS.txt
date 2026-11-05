@@ -1,0 +1,2 @@
+8570e773bbde81d0b739bea953f48133704c6bc5b46aa6566aa606a25d413afa  WinFix.Agent.exe
+c814389e36d4ed9faf274c249aca20034ce7a34c8b5418ca3beac9ac2597f0b0  WinFix-AI-win-x64-portable.zip

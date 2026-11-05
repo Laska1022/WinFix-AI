@@ -23,3 +23,7 @@
 ## Bug review — 2026-11-04
 
 BUG-01 (incomplete audit entries accepted) is fixed in code commit `a2bdfc1d482d51df3c078cb4a729dbdf1e209817`. BUG-02 (missing final journal delimiter) is fixed in code commit `96a40fc07af63ebfa68bf4a43477cfd1e3cd094e`. BUG-03 (client protocol errors) is fixed in code commit `a43738bdf1d68a063555954d8fbee5be1ad7aa7e`. All three findings in [BUG_REPORT.md](BUG_REPORT.md) are resolved on `fix/client-protocol-errors-20261104`, pending review/merge. The audit reproductions require local file damage/modification. Invalid existing audit records or missing final delimiters must be handled through the documented archive/session-rotation procedure; startup does not silently repair them.
+
+## Download distribution — 2026-11-05
+
+GitHub Releases API access still returns Forbidden in the current runtime. Repository-hosted binaries are provided as an interim download path; no GitHub Release publication is claimed.

@@ -39,3 +39,7 @@ future operations. No arbitrary PowerShell input.
 ## Bug review — 2026-11-04
 
 BUG-01, BUG-02 and BUG-03 in [BUG_REPORT.md](BUG_REPORT.md) are fixed with regression coverage. The combined branch is `fix/client-protocol-errors-20261104`; review/merge remains pending. Continue the P0 real-Windows/private-route acceptance gate above when its prerequisites are available.
+
+## Download distribution — 2026-11-05
+
+Finish GitHub Release publication after the running environment applies access to api.github.com and uploads.github.com. Assets and source provenance are recorded in [downloads](../downloads/bugfix-preview-20261105/README.md).

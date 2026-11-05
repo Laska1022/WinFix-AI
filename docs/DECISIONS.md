@@ -44,3 +44,7 @@
   handling, TLS verification and size limits. Exercise actual HTTP parsing using
   in-memory response bytes so cross-platform regressions need no new dependency;
   separately verify the real CLI against a local TLS fixture. This fixes BUG-03.
+
+## Download distribution — 2026-11-05
+
+Provide checksum-verified repository downloads on a separate branch while the GitHub Releases API is blocked. Preserve the existing installer branches; these artifacts package the merged command-line agent.

@@ -71,3 +71,7 @@ of claiming remote functionality or rebuilding the completed HTTPS prototype.
 ## Bug review — 2026-11-04
 
 The 2026-11-04 review branch is `review/phase0-bug-report-20261104`, based on source `bd78e2cc1ce4157e5d259a0f43824f6359fa1ed5`. Read [BUG_REPORT.md](BUG_REPORT.md): three bugs were reproduced while all 24 existing tests passed. All three bugs have since been fixed on `fix/client-protocol-errors-20261104`; see the verified code commit above and TEST_REPORT.md for the 32-test result and real local HTTPS protocol checks. Review/merge remains pending. Next: continue the outstanding owner-authorized Windows/private-route acceptance when available; the Windows prerequisite remains unresolved.
+
+## Download distribution — 2026-11-05
+
+Prepared binaries for merged commit `adcf3aef88ec1ce6d9374c8ffc95f869978955c9` are in [downloads](../downloads/bugfix-preview-20261105/README.md) on `release/windows-bugfix-preview-20261105`. GitHub Release publication remains blocked by the runtime API policy; saved API domain settings are not yet applied.

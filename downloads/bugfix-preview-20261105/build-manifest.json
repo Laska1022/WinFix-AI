@@ -1,0 +1,22 @@
+{
+  "commit": "adcf3aef88ec1ce6d9374c8ffc95f869978955c9",
+  "sdk": "10.0.403",
+  "runtime": "10.0.14",
+  "rid": "win-x64",
+  "self_contained": true,
+  "single_file": true,
+  "native_libraries_self_extract": true,
+  "windows_execution_verified": false,
+  "assets": [
+    {
+      "name": "WinFix.Agent.exe",
+      "bytes": 50349283,
+      "sha256": "8570e773bbde81d0b739bea953f48133704c6bc5b46aa6566aa606a25d413afa"
+    },
+    {
+      "name": "WinFix-AI-win-x64-portable.zip",
+      "bytes": 44791252,
+      "sha256": "c814389e36d4ed9faf274c249aca20034ce7a34c8b5418ca3beac9ac2597f0b0"
+    }
+  ]
+}
